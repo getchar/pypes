@@ -98,8 +98,8 @@ for ith in range(1, args.numpipes):
 pipe_lengths = [get_length(freq, args.velocity) for freq in pipe_freqs]
 minwidth = len(str(len(pipe_lengths)))
 for ith, length in enumerate(pipe_lengths):
-    # still working on this
-    length = int(length * 10000)
-    length = float(length) / 100
+    # we want cm
+    length /= 100
     print "{ith:{minwidth}}: {length} cm".format(minwidth = minwidth, 
-                                                 ith = ith, length = length)
+                                                 ith = ith, 
+                                                 length = round(length, 2))
