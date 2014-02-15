@@ -13,7 +13,6 @@ program_description = ("pypes will calculate the specs for a set of equal "
                        "lowest pipe.")
 # gather up the specs
 parser = argparse.ArgumentParser(description = program_description);
-setattr(parser, "verbose", True)
 parser.add_argument("--fundamental", "-f", type = float, 
                     default = 261.6255653005987,
                     help = ("Frequency (in Hz) of the lowest note.  Middle C "
@@ -56,6 +55,9 @@ if not args.mode:
     else:
         # chromatic by default
         args.mode = [1] * args.step
+# rotate until first pipe is aligned with correct index
+off = args.index - 1
+args.mode = args.mode[off:] + args.mode[:off]
 # this lets us simplify some computations later on
 pipes_per_octave = len(args.mode)
 double_safe = True
@@ -63,8 +65,6 @@ if sum(args.mode) != args.step:
     double_safe = False
     print ("The steps in your mode doesn't add up to an octave.  These "
            "results might not make sense.")
-off = args.index - 1
-args.mode = args.mode[off:] + args.mode[:off]
 
 # build the table of frequencies for the one chromatic octave
 et_step = 2 ** (1.0 / args.step)
