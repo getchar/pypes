@@ -41,11 +41,18 @@ parser.add_argument("--diatonic", "-d", action = "store_true",
 parser.add_argument("--index", "-i", type = int, default = 1,
                     help = ("Tonal index of the lowest pipe (only useful "
                             "if a mode has been specified).  1 by default."))
+parser.add_argument("--round", "-r", type = int, default = 2,
+                    help = ("How many digits past the decimal point to round "
+                            "the lengths off to."))
+parser.add_argument("--plug", "-p", type = float, default = 0.0,
+                    help = ("The depth of the plug that will be used to stop "
+                            "the tubes.  0 by default"))
 args = parser.parse_args()
 
-def get_length(freq, vel):
-    """Returns the length of a tube with the desired resonant frequency."""
-    return float(vel) / (4 * freq)
+def get_length(freq, args):
+    """Returns the length in cm of a tube with the desired resonant frequency."""
+    velcm = args.velocity * 100.0
+    return float(velcm / (4 * freq) + args.plug)
 
 # futz with the mode a bit
 if not args.mode:
@@ -95,11 +102,12 @@ for ith in range(1, args.numpipes):
         pipe_freqs[ith] = chrom_freqs[cf_index] * octave
 
 # now compute and display the length
-pipe_lengths = [get_length(freq, args.velocity) for freq in pipe_freqs]
+pipe_lengths = [get_length(freq, args) for freq in pipe_freqs]
 minwidth = len(str(len(pipe_lengths)))
 for ith, length in enumerate(pipe_lengths):
     # we want cm
-    length *= 100.0
+    length = round(length, args.round)
     print "{ith:{minwidth}}: {length} cm".format(minwidth = minwidth, 
                                                  ith = ith, 
-                                                 length = round(length, 2))
+                                                 length = length)
+                                                                
