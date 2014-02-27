@@ -33,7 +33,7 @@ parser.add_argument("--mode", "-m", nargs = '+', type = int, default = None,
                             "should sum to the total number of steps per "
                             "scale but and pypes will complain if they don't "
                             "but it will perform the computations anyway."))
-parser.add_argument("--diatonic", "-d", action = "store_true",
+parser.add_argument("--diatonic", "-D", action = "store_true",
                     default = False,
                     help = ("Shorthand for mode [2, 2, 1, 2, 2, 2, 1].  "
                             "Explicitly setting a mode with the --mode option "
@@ -47,12 +47,15 @@ parser.add_argument("--round", "-r", type = int, default = 2,
 parser.add_argument("--plug", "-p", type = float, default = 0.0,
                     help = ("The depth of the plug that will be used to stop "
                             "the tubes.  0 by default"))
+parser.add_argument("--diameter", "-d", type = float, default = 0.0,
+                    help = ("The diameter of the tubes, for more accurate "
+                            "calculations."))
 args = parser.parse_args()
 
 def get_length(freq, args):
     """Returns the length in cm of a tube with the desired resonant frequency."""
     velcm = args.velocity * 100.0
-    return float(velcm / (4 * freq) + args.plug)
+    return float(velcm / (4 * freq) + args.plug) - (0.4 * args.diameter)
 
 # futz with the mode a bit
 if not args.mode:
