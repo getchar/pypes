@@ -50,6 +50,10 @@ parser.add_argument("--plug", "-p", type = float, default = 0.0,
 parser.add_argument("--diameter", "-d", type = float, default = 0.0,
                     help = ("The diameter of the tubes, for more accurate "
                             "calculations."))
+parser.add_argument("--extra", "-x", default = False, 
+                    action="store_true",
+                    help = ("Show extra information, meaning the frequency "
+                            "of each pipe."))
 args = parser.parse_args()
 
 def get_length(freq, args):
@@ -106,11 +110,27 @@ for ith in range(1, args.numpipes):
 
 # now compute and display the length
 pipe_lengths = [get_length(freq, args) for freq in pipe_freqs]
-minwidth = len(str(len(pipe_lengths)))
+ith_mw = len(str(len(pipe_lengths)))
+l_max = ""
+l_zp = args.round
 for ith, length in enumerate(pipe_lengths):
     # we want cm
-    length = round(length, args.round)
-    print "{ith:{minwidth}}: {length} cm".format(minwidth = minwidth, 
-                                                 ith = ith, 
-                                                 length = length)
+    length = "{length:.{l_zp}f}".format(length = round(length, l_zp),
+                                         l_zp = l_zp)
+    if l_max == "":
+        # we're processing the lowest .: longest pipe, make its string length
+        # the min width for all further strings representing length
+        l_max = len(str(length))
+    length = length.rjust(l_max, " ")
+    freq = "" if not args.extra else (" ({freq:.{l_zp}f})"
+                                      ).format(freq = round(pipe_freqs[ith],
+                                                            l_zp),
+                                               l_zp = l_zp)
+
+    print ("{ith:{ith_mw}}: {length} cm{freq:}"
+           ).format(ith_mw = ith_mw,
+                    ith = ith, 
+                    length = length,
+                    freq = freq)
+
                                                                 
